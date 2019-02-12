@@ -1,0 +1,62 @@
+[
+  {
+    "code": "WEB-PL",
+    "name": "Polska",
+    "description": "opis",
+    "enabled": true,
+    "contact_email": "info@smartbyte.pl",
+    "base_currency": [
+      {
+        "code": "PLN"
+      }
+    ],
+    "default_locale": [
+      {
+        "code": "pl_PL"
+      }
+    ],
+    "currencies": [
+      {
+        "code": "PLN"
+      },
+      {
+        "code": "EUR"
+      }
+    ],
+    "locales": [
+      {
+        "code": "pl_PL"
+      }
+    ]
+  },
+  {
+    "code": "WEB-2",
+    "name": "Kana\u0142 2",
+    "description": null,
+    "enabled": true,
+    "contact_email": null,
+    "base_currency": [
+      {
+        "code": "EUR"
+      }
+    ],
+    "default_locale": [
+      {
+        "code": "pl_PL"
+      }
+    ],
+    "currencies": [
+      {
+        "code": "PLN"
+      },
+      {
+        "code": "EUR"
+      }
+    ],
+    "locales": [
+      {
+        "code": "pl_PL"
+      }
+    ]
+  }
+]

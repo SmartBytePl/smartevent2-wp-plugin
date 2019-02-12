@@ -1,0 +1,14 @@
+{
+    "autoload": {
+        "classmap": [
+            "src/SmartEventPlugin/",
+            "src/SmartEventPlugin/Entity/",
+            "src/SmartEventPlugin/Enum/",
+            "src/SmartEventPlugin/Exception/",
+            "src/Wruczek/PhpFileCache/"
+        ]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
+    }
+}

@@ -1,0 +1,15 @@
+[
+  {
+    "source_currency": [
+      {
+        "code": "PLN"
+      }
+    ],
+    "target_currency": [
+      {
+        "code": "USD"
+      }
+    ],
+    "ratio": 3.7000000000000002
+  }
+]
