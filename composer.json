@@ -2,7 +2,7 @@
     "autoload": {
         "classmap": [
             "src/SmartEventPlugin/",
-            "src/SmartEventPlugin/Entity/",
+            "src/SmartEventPlugin/Entity/V1/",
             "src/SmartEventPlugin/Enum/",
             "src/SmartEventPlugin/Exception/",
             "src/Wruczek/PhpFileCache/"

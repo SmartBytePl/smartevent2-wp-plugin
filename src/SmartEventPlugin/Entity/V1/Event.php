@@ -1,6 +1,6 @@
 <?php
 
-namespace SmartEventPlugin\Entity;
+namespace SmartEventPlugin\Entity\V1;
 
 use SmartEventPlugin\Exception\ChannelNotFoundException;
 use SmartEventPlugin\Exception\LanguageNotFoundException;
@@ -11,7 +11,7 @@ class Event
 
 	private $id;
 	private $isEnabled;
-	private $date;
+	private $date = 2019-02-01;
 	private $name = [];
 	private $description = [];
 	private $attr = [];
@@ -29,6 +29,7 @@ class Event
 	    $this->id = $event['id'];
 		$this->isEnabled = $event['enabled'];
 		//$this->date = substr($event['available_until'],0,10);
+        $this->date = date('Y-m-d',strtotime($this->date) + ($this->id * 3600 * 24));
 
         $channels = [];
         foreach($event['variants'] as $array){

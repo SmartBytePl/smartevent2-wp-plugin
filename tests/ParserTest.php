@@ -3,17 +3,16 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use SmartEventPlugin\Entity\Event;
-use SmartEventPlugin\Entity\Product;
-use SmartEventPlugin\Entity\Channel;
-use SmartEventPlugin\Entity\Promotion;
+use SmartEventPlugin\Entity\V1\Event;
+use SmartEventPlugin\Entity\V1\Product;
+use SmartEventPlugin\Entity\V1\Channel;
+use SmartEventPlugin\Entity\V1\Promotion;
 use SmartEventPlugin\Enum\Entity;
 use SmartEventPlugin\EventParser;
 use Wruczek\PhpFileCache\PhpFileCache;
 use SmartEventPlugin\Exception\ChannelNotFoundException;
 use SmartEventPlugin\Exception\CurrencyNotFoundException;
 use SmartEventPlugin\Exception\LanguageNotFoundException;
-use SmartEventPlugin\Exception\EntityNotFoundException;
 
 final class ParserTest extends TestCase
 {
@@ -155,20 +154,33 @@ final class ParserTest extends TestCase
 
     public function testItShouldReturnEventDates()
     {
-        //$dates = $this->se->getEventDates();
-        $this->markTestIncomplete();
+        $dates = $this->se->getEventDates();
+        $date = reset($dates);
+
+        $this->assertNotEquals('0', strtotime($date));
+        $this->assertIsArray($dates);
+        $this->assertEquals(403, count($dates));
     }
 
     public function testItShouldReturnFirstAndLastDate()
     {
-        //$dates = $this->se->getFirstAndLastDate();
-        $this->markTestIncomplete();
+        $date = $this->se->getFirstAndLastDate('first');
+
+        $this->assertInstanceOf(\DateTime::class, $date);
+        $this->assertEquals('2019-02-13', $date->format('Y-m-d'));
+
+        $date = $this->se->getFirstAndLastDate('last');
+        $this->assertEquals('2020-11-03', $date->format('Y-m-d'));
     }
 
     public function testItShouldFindEventsByDate()
     {
-        //$events = $this->se->findByDate();
-        $this->markTestIncomplete();
+        $events = $this->se->findByDate('2019-02-15');
+        $event = reset ($events);
+
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertIsArray($events);
+        $this->assertEquals('1',count($events));
     }
 
     public function testItShouldFindByCategoryNames()
@@ -234,8 +246,14 @@ final class ParserTest extends TestCase
 
     public function testItShouldConvertPrice()
     {
-        $price = $this->se->convertPriceTo('USD');
-        $this->markTestIncomplete();
+        $price = $this->se->convertPriceTo(970, 'USD');
+        $this->assertEquals(262.16,round($price,2));
+    }
+
+    public function testItShouldThrowCurrencyNotFoundException()
+    {
+        $this->expectException(CurrencyNotFoundException::class);
+        $price = $this->se->convertPriceTo(970, 'EUR');
     }
 
 }

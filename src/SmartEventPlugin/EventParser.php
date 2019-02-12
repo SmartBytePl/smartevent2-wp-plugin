@@ -2,11 +2,12 @@
 
 namespace SmartEventPlugin;
 
+use SmartEventPlugin\Entity\V1\Currency;
 use SmartEventPlugin\Enum\Entity;
-use SmartEventPlugin\Entity\Factory;
-use SmartEventPlugin\Entity\Event;
-use SmartEventPlugin\Entity\Category;
-use SmartEventPlugin\Entity\Channel;
+use SmartEventPlugin\Entity\V1\Factory;
+use SmartEventPlugin\Entity\V1\Event;
+use SmartEventPlugin\Entity\V1\Category;
+use SmartEventPlugin\Entity\V1\Channel;
 use SmartEventPlugin\Exception\CurrencyNotFoundException;
 use SmartEventPlugin\Exception\EntityNotFoundException;
 use SmartEventPlugin\Exception\ChannelNotFoundException;
@@ -21,17 +22,20 @@ use Wruczek\PhpFileCache\PhpFileCache;
 class EventParser
 {
     const API_PATH_PATTERN = '/openapi/v%d';
+    const CLASS_PATTERN = '\SmartEventPlugin\Entity\V%d\%s';
     const DEFAULT_CACHE_TIME_SEC = 300;
     const CACHE_KEY_PATTERN = '%s-%s';
 
     private $host;
     private $apiPath;
+    private $version;
 
     /** @var Channel $channel */
     private $channel;
     private $language;
+    private $factory;
 
-    public $items = [];
+    private $items = [];
 
     /**
      * EventParser constructor.
@@ -40,10 +44,13 @@ class EventParser
      * @param $host
      * @param int $version
      */
-    public function __construct($host, $version = 1)
+    public function __construct($host,int $version = 1)
     {
         $this->host = $host;
-        $this->apiPath = $this->getApiPath($version);
+        $this->version = $version;
+        $this->apiPath = sprintf(self::API_PATH_PATTERN, (int)$version);
+        $factoryClass = sprintf(self::CLASS_PATTERN, (int)$version, 'Factory');
+        $this->factory = new $factoryClass();
     }
 
     /**
@@ -55,19 +62,13 @@ class EventParser
      */
     public function loadData($channel = 'WEB-PL', $language = null)
     {
-        $factory = new Factory();
         foreach (Entity::TYPES as $entityType){
             $array = $this->getEntity($entityType, $channel);
-            $entity = $factory->getEntities($array, $entityType);
+            $entity = $this->factory->getEntities($array, $entityType);
             $this->items[$entityType] = $entity;
         }
         $this->setChannel($channel);
         $this->setLanguage($language);
-    }
-
-    private function getApiPath($version = 1)
-    {
-        return sprintf(self::API_PATH_PATTERN, (int)$version);
     }
 
     public static function  getCacheKey(String $entityType, String $channel)
@@ -91,7 +92,7 @@ class EventParser
             throw new ChannelNotFoundException(sprintf('Channel %s not found', $channel));
         }
 
-        $class = $class = 'SmartEventPlugin\Entity\\'.$entityType;
+        $class = sprintf(self::CLASS_PATTERN, $this->version, $entityType);
         if (empty($class::API_ACTION)){
             return [];
         }
@@ -297,16 +298,14 @@ class EventParser
 	    	if(!$passed){
 	    		$first_date = $date;
 	    		$last_date = clone $first_date;
-	    		$last_date->modify('+30 days');
+	    		$last_date->modify('+2000 days');
 		    }
 		    if($date <= $last_date)
 		        $passed[] = $date;
 	    }
 	    $last = count($passed) > 0 ? $passed[count($passed) - 1] : null;
-	    if($which == 'first')
-	    	return $first_date;
-	    else
-	    	return $last;
+
+	    return ($which == 'first') ? $first_date : $last;
     }
 
     /**
@@ -405,13 +404,20 @@ class EventParser
 		return $ids;
 	}
 
-	public function convertPriceTo($destCurrency)
+	public function convertPriceTo($price, $targetCurrency)
     {
-
-        if ($this->getChannel()->hasCurrency($destCurrency)){
-            throw new CurrencyNotFoundException(sprintf('Currency %s is not availible for channel %s', $destCurrency, $this->getChannel()->getCode()));
+        if ($this->getChannel()->hasCurrency($targetCurrency)){
+            throw new CurrencyNotFoundException(sprintf('Currency %s is not availible for channel %s', $targetCurrency, $this->getChannel()->getCode()));
         }
-
         $sourceCurrency = $this->getChannel()->getBaseCurrency();
+
+        /** @var Currency $exchange */
+        $exchange = $this->items[Entity::TYPE_CURRENCY][$sourceCurrency.'-'.$targetCurrency];
+        if (!isset($exchange)){
+            throw new \InvalidArgumentException(sprintf("Exchange rate for currency %s not exists", $targetCurrency));
+        }
+        $ratio = $exchange->getRatio();
+
+        return $price/$ratio;
     }
 }

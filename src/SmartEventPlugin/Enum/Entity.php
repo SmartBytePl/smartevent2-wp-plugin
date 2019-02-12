@@ -18,7 +18,5 @@ class Entity
         self::TYPE_EVENT,
         self::TYPE_PRODUCT,
         self::TYPE_PROMOTION,
-        self::TYPE_VARIANT,
-        self::TYPE_CATEGORY
     ];
 }

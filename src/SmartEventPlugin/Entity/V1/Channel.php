@@ -1,6 +1,6 @@
 <?php
 
-namespace SmartEventPlugin\Entity;
+namespace SmartEventPlugin\Entity\V1;
 
 
 class Channel

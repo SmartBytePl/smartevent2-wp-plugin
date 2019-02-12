@@ -1,8 +1,8 @@
 <?php
 
-namespace SmartEventPlugin\Entity;
+namespace SmartEventPlugin\Entity\V1;
 
-use SmartEventPlugin\Entity\Event;
+use SmartEventPlugin\Entity\V1\Event;
 
 class Product extends Event
 {

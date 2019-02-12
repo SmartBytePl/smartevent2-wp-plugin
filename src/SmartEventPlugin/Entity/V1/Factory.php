@@ -1,6 +1,6 @@
 <?php
 
-namespace SmartEventPlugin\Entity;
+namespace SmartEventPlugin\Entity\V1;
 
 class Factory
 {
@@ -8,7 +8,7 @@ class Factory
     public function getEntities($json, $entityType){
         $return = [];
         foreach ($json as $item){
-            $class = 'SmartEventPlugin\Entity\\'.$entityType;
+            $class = 'SmartEventPlugin\Entity\V1\\'.$entityType;
             $object = new $class($item);
 
             if (method_exists($object,'getCode')){
